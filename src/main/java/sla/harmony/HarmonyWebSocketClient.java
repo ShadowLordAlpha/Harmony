@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import sla.harmony.event.HarmonyReadyEvent;
+import sla.harmony.event.MessageAcknowledgeEvent;
 import sla.harmony.event.MessageCreateEvent;
 import sla.harmony.event.PresenceUpdateEvent;
 import sla.harmony.event.TypingStartEvent;
@@ -93,6 +94,10 @@ public class HarmonyWebSocketClient extends WebSocketClient {
 					harmony.getEventManager().throwEvent(new PresenceUpdateEvent(harmony, data));
 					break;
 				}
+				case "MESSAGE_ACK": {
+					harmony.getEventManager().throwEvent(new MessageAcknowledgeEvent(data));
+					break;
+				}
 				default: {
 					logger.info("Unknown Event: {}", message);
 				}
@@ -143,11 +148,13 @@ public class HarmonyWebSocketClient extends WebSocketClient {
 			con.setRequestProperty("content-type", "application/json");
 			
 			// Send post request
-			con.setDoOutput(true);
-			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-			wr.writeBytes(jobj.toString());
-			wr.flush();
-			wr.close();
+			if(jobj != null) {
+				con.setDoOutput(true);
+				DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+				wr.writeBytes(jobj.toString());
+				wr.flush();
+				wr.close();
+			}
 	
 			int responseCode = con.getResponseCode(); // TODO stuff with this later
 	
@@ -174,7 +181,7 @@ public class HarmonyWebSocketClient extends WebSocketClient {
 			URL obj = new URL(url);
 			HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
 	
-			//add reuqest header
+			//add request header
 			con.setRequestMethod("GET");
 			con.setRequestProperty("User-Agent", USER_AGENT);
 			con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");

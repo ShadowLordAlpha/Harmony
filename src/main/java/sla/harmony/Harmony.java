@@ -126,4 +126,9 @@ public class Harmony {
 		JSONObject jobj = new JSONObject().put("content", message)/*.put("mentions", ???)*/.put("nonce", "HARMONYCLIENT").put("tts", false);
 		HarmonyWebSocketClient.sendPostObj(String.format("https://discordapp.com/api/channels/%s/messages", channelId), token, jobj);
 	}
+
+	// TODO might not want this to be a method
+	public String getToken() {
+		return token;
+	}
 }

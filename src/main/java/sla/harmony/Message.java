@@ -37,6 +37,9 @@ public class Message {
 		author = harmony.getUser(jobj.getJSONObject("author").getString("id"));
 		author.update(jobj.getJSONObject("author"));
 		attachments = jobj.getJSONArray("attachments");
+		
+		// Acknowledge that we have the message to discord (maybe let user do this?)
+		HarmonyWebSocketClient.sendPostObj(String.format("https://discordapp.com/api/channels/%s/messages/%s/ack", channelId, id), harmony.getToken(), jobj);
 	}
 
 	public boolean isTts() {
