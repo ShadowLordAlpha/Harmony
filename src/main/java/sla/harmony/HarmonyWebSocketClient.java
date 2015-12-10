@@ -122,7 +122,7 @@ public class HarmonyWebSocketClient extends WebSocketClient {
 	}
 	
 	
-	public static final String USER_AGENT = String.format("Harmony DiscordBot(%s, %s)", "N/A", "0.1.0");
+	public static final String USER_AGENT = String.format("Harmony DiscordBot(%s, %s)", "https://github.com/ShadowLordAlpha/Harmony/", "0.1.1");
 	/**
 	 * 
 	 * @return
@@ -135,7 +135,7 @@ public class HarmonyWebSocketClient extends WebSocketClient {
 	
 			//add reuqest header
 			con.setRequestMethod("POST");
-			con.setRequestProperty("User-Agent", "Harmony");
+			con.setRequestProperty("User-Agent", USER_AGENT);
 			con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 			if(token != null && !token.isEmpty()) {
 				con.setRequestProperty("Authorization", token);
@@ -176,7 +176,7 @@ public class HarmonyWebSocketClient extends WebSocketClient {
 	
 			//add reuqest header
 			con.setRequestMethod("GET");
-			con.setRequestProperty("User-Agent", "Harmony");
+			con.setRequestProperty("User-Agent", USER_AGENT);
 			con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 			if(token != null && !token.isEmpty()) {
 				con.setRequestProperty("Authorization", token);
