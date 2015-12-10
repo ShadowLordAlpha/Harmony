@@ -23,16 +23,16 @@ public class Harmony {
 	
 	public Harmony(File jsonFile) {
 		
+		String file = "";
 		try(Scanner in = new Scanner(jsonFile)) {
-			String file = "";
 			while(in.hasNextLine()) {
 				file += in.nextLine();
 			}
 		} catch(Exception e) {
-			
+			e.printStackTrace();
 		}
 		
-		JSONObject jobj = new JSONObject();
+		JSONObject jobj = new JSONObject(file);
 		
 		this.email = jobj.getString("email");
 		this.password = jobj.getString("password");
