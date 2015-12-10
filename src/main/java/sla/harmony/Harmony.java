@@ -121,4 +121,9 @@ public class Harmony {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public void sendMessage(String channelId, String message) {
+		JSONObject jobj = new JSONObject().put("content", message)/*.put("mentions", ???)*/.put("nonce", "HARMONYCLIENT").put("tts", false);
+		HarmonyWebSocketClient.sendPostObj(String.format("https://discordapp.com/api/channels/%s/messages", channelId), token, jobj);
+	}
 }
