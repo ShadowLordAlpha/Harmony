@@ -3,6 +3,7 @@ package sla.harmony;
 import java.io.File;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.Scanner;
 
 import org.json.JSONObject;
 
@@ -22,6 +23,19 @@ public class Harmony {
 	
 	public Harmony(File jsonFile) {
 		
+		try(Scanner in = new Scanner(jsonFile)) {
+			String file = "";
+			while(in.hasNextLine()) {
+				file += in.nextLine();
+			}
+		} catch(Exception e) {
+			
+		}
+		
+		JSONObject jobj = new JSONObject();
+		
+		this.email = jobj.getString("email");
+		this.password = jobj.getString("password");
 	}
 	
 	public Harmony(String email, String password) {

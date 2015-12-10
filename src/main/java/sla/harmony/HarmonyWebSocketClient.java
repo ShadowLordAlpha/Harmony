@@ -122,7 +122,7 @@ public class HarmonyWebSocketClient extends WebSocketClient {
 	}
 	
 	
-	public static final String USER_AGENT = String.format("Harmony DiscordBot(%s, %s)", "https://github.com/ShadowLordAlpha/Harmony/", "0.1.1");
+	public static final String USER_AGENT = String.format("Harmony DiscordBot(%s, %s)", "https://github.com/ShadowLordAlpha/Harmony/", "0.1.2");
 	/**
 	 * 
 	 * @return
