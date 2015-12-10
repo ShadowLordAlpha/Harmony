@@ -10,6 +10,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import sla.harmony.event.HarmonyReadyEvent;
 import sla.harmony.event.MessageAcknowledgeEvent;
 import sla.harmony.event.MessageCreateEvent;
+import sla.harmony.event.MessageDeleteEvent;
 import sla.harmony.event.PresenceUpdateEvent;
 import sla.harmony.event.TypingStartEvent;
 
@@ -96,6 +98,10 @@ public class HarmonyWebSocketClient extends WebSocketClient {
 				}
 				case "MESSAGE_ACK": {
 					harmony.getEventManager().throwEvent(new MessageAcknowledgeEvent(data));
+					break;
+				}
+				case "MESSAGE_DELETE": {
+					harmony.getEventManager().throwEvent(new MessageDeleteEvent(data));
 					break;
 				}
 				default: {
@@ -183,6 +189,74 @@ public class HarmonyWebSocketClient extends WebSocketClient {
 	
 			//add request header
 			con.setRequestMethod("GET");
+			con.setRequestProperty("User-Agent", USER_AGENT);
+			con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+			if(token != null && !token.isEmpty()) {
+				con.setRequestProperty("Authorization", token);
+			}
+			con.setRequestProperty("content-type", "application/json");
+	
+			int responseCode = con.getResponseCode(); // TODO stuff with this later
+	
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+	
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+			
+			return new JSONObject(response.toString());
+		} catch(Exception e) {
+			
+		}
+		
+		return null;
+	}
+	
+	public static JSONArray sendGetArr(String url, String token) {
+		
+		try {
+			URL obj = new URL(url);
+			HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
+	
+			//add request header
+			con.setRequestMethod("GET");
+			con.setRequestProperty("User-Agent", USER_AGENT);
+			con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+			if(token != null && !token.isEmpty()) {
+				con.setRequestProperty("Authorization", token);
+			}
+			con.setRequestProperty("content-type", "application/json");
+	
+			int responseCode = con.getResponseCode(); // TODO stuff with this later
+	
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+	
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+			
+			return new JSONArray(response.toString());
+		} catch(Exception e) {
+			
+		}
+		
+		return null;
+	}
+	
+	public static JSONObject sendDeleteObj(String url, String token) {
+		
+		try {
+			URL obj = new URL(url);
+			HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
+	
+			//add request header
+			con.setRequestMethod("DELETE");
 			con.setRequestProperty("User-Agent", USER_AGENT);
 			con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 			if(token != null && !token.isEmpty()) {

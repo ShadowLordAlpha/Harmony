@@ -5,6 +5,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Scanner;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import sla.harmony.event.EventManager;
@@ -122,9 +123,29 @@ public class Harmony {
 		
 	}
 	
-	public void sendMessage(String channelId, String message) {
+	public JSONObject sendMessage(String channelId, String message) {
 		JSONObject jobj = new JSONObject().put("content", message)/*.put("mentions", ???)*/.put("nonce", "HARMONYCLIENT").put("tts", false);
-		HarmonyWebSocketClient.sendPostObj(String.format("https://discordapp.com/api/channels/%s/messages", channelId), token, jobj);
+		return HarmonyWebSocketClient.sendPostObj(String.format("https://discordapp.com/api/channels/%s/messages", channelId), token, jobj);
+	}
+	
+	public void deleteMessage(Message message) {
+		deleteMessage(message.getChannelId(), message.getId());
+	}
+	
+	public JSONObject deleteMessage(String channelId, String messageId) {
+		return HarmonyWebSocketClient.sendDeleteObj(String.format("https://discordapp.com/api/channels/%s/messages/%s", channelId, messageId), token);
+	}
+	
+	public JSONArray getMessagesBefore(Message message) {
+		return getMessagesBefore(message, 50);
+	}
+	
+	public JSONArray getMessagesBefore(Message message, int limit) {
+		return getMessagesBefore(message.getChannelId(), message.getId(), limit);
+	}
+	
+	public JSONArray getMessagesBefore(String channelId, String messageId, int limit) {
+		return HarmonyWebSocketClient.sendGetArr(String.format("https://discordapp.com/api/channels/%s/messages?before=%s&limit=%d", channelId, messageId, limit), token);
 	}
 
 	// TODO might not want this to be a method
