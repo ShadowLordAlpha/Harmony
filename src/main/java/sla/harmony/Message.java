@@ -3,6 +3,8 @@ package sla.harmony;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import sla.harmony.rest.DiscordRequest;
+
 public class Message {
 
 	private boolean tts;
@@ -39,7 +41,7 @@ public class Message {
 		attachments = jobj.getJSONArray("attachments");
 		
 		// Acknowledge that we have the message to discord (maybe let user do this?)
-		HarmonyWebSocketClient.sendPostObj(String.format("https://discordapp.com/api/channels/%s/messages/%s/ack", channelId, id), harmony.getToken(), jobj);
+		DiscordRequest.sendPost(String.format("channels/%s/messages/%s/ack", channelId, id), harmony, jobj.toString());
 	}
 
 	public boolean isTts() {

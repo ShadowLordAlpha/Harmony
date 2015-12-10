@@ -9,8 +9,13 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import sla.harmony.event.EventManager;
+import sla.harmony.rest.DiscordRequest;
+import sla.harmony.websocket.HarmonyWebSocketClient;
 
 public class Harmony {
+	
+	public static final String VERSION = "v0.1.4";
+	public static final String GITHUB_URL = "https://github.com/ShadowLordAlpha/Harmony";
 	
 	private String email;
 	private String password;
@@ -46,11 +51,11 @@ public class Harmony {
 	
 	public Harmony login() {
 		JSONObject jobj = new JSONObject().put("email", email).put("password", password);
-		jobj = HarmonyWebSocketClient.sendPostObj("https://discordapp.com/api/auth/login", null, jobj);
+		jobj = DiscordRequest.sendPostObj(DiscordRequest.DISCORD_URL_EXTENTION_LOGIN, null, jobj.toString());
 		
 		token = jobj.getString("token");
 		
-		jobj = HarmonyWebSocketClient.sendGetObj("https://discordapp.com/api/gateway", token);
+		jobj = DiscordRequest.sendGetObj("gateway", this, null);
 		
 		client = new HarmonyWebSocketClient(this, URI.create(jobj.getString("url").replace("wss", "ws")));
 		return this;
@@ -58,7 +63,7 @@ public class Harmony {
 	
 	public void logout() {
 		JSONObject jobj = new JSONObject().put("token", token);
-		HarmonyWebSocketClient.sendPostObj("https://discordapp.com/api/auth/logout", token, jobj);
+		DiscordRequest.sendPostObj(DiscordRequest.DISCORD_URL_EXTENTION_LOGOUT, this, jobj.toString());
 		
 		token = null;
 	}
@@ -67,7 +72,7 @@ public class Harmony {
 		return manager;
 	}
 	
-	void setUserSettings(UserSettings settings) {
+	public void setUserSettings(UserSettings settings) {
 		this.settings = settings;
 	}
 	
@@ -84,7 +89,7 @@ public class Harmony {
 		return temp;
 	}
 	
-	JSONObject getMetadata() {
+	public JSONObject getMetadata() {
 		return new JSONObject()
 				.put("op", 2)
 				.put("d", new JSONObject()
@@ -125,7 +130,7 @@ public class Harmony {
 	
 	public JSONObject sendMessage(String channelId, String message) {
 		JSONObject jobj = new JSONObject().put("content", message)/*.put("mentions", ???)*/.put("nonce", "HARMONYCLIENT").put("tts", false);
-		return HarmonyWebSocketClient.sendPostObj(String.format("https://discordapp.com/api/channels/%s/messages", channelId), token, jobj);
+		return DiscordRequest.sendPostObj(String.format("channels/%s/messages", channelId), this, jobj.toString());
 	}
 	
 	public void deleteMessage(Message message) {
@@ -133,7 +138,7 @@ public class Harmony {
 	}
 	
 	public JSONObject deleteMessage(String channelId, String messageId) {
-		return HarmonyWebSocketClient.sendDeleteObj(String.format("https://discordapp.com/api/channels/%s/messages/%s", channelId, messageId), token);
+		return DiscordRequest.sendDeleteObj(String.format("channels/%s/messages/%s", channelId, messageId), this, null);
 	}
 	
 	public JSONArray getMessagesBefore(Message message) {
@@ -145,7 +150,7 @@ public class Harmony {
 	}
 	
 	public JSONArray getMessagesBefore(String channelId, String messageId, int limit) {
-		return HarmonyWebSocketClient.sendGetArr(String.format("https://discordapp.com/api/channels/%s/messages?before=%s&limit=%d", channelId, messageId, limit), token);
+		return DiscordRequest.sendGetArr(String.format("channels/%s/messages?before=%s&limit=%d", channelId, messageId, limit), this, null);
 	}
 
 	// TODO might not want this to be a method
