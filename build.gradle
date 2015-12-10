@@ -1,0 +1,32 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'application'
+
+repositories {
+    mavenCentral()
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    maven { url "http://itsghost.me/maven/" }
+}
+
+mainClassName = ""
+applicationDefaultJvmArgs = [""]
+javadoc.options.tags = []
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencies {
+    compile "org.slf4j:slf4j-api:+"
+    compile "org.slf4j:slf4j-simple:+"
+	compile "org.json:json:+"
+	compile "org.java-websocket:Java-WebSocket:+"
+}
+
+jar {
+	baseName = 'Harmony'
+	version = '0.0.0a'
+}
+
+task wrapper(type: Wrapper) {
+	gradleVersion = '2.7'
+}
