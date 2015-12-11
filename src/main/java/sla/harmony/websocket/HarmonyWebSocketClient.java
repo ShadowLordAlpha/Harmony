@@ -21,6 +21,7 @@ import sla.harmony.event.HarmonyReadyEvent;
 import sla.harmony.event.MessageAcknowledgeEvent;
 import sla.harmony.event.MessageCreateEvent;
 import sla.harmony.event.MessageDeleteEvent;
+import sla.harmony.event.MessageUpdateEvent;
 import sla.harmony.event.PresenceUpdateEvent;
 import sla.harmony.event.TypingStartEvent;
 
@@ -105,6 +106,9 @@ public class HarmonyWebSocketClient extends WebSocketClient {
 				case "MESSAGE_DELETE": {
 					harmony.getEventManager().throwEvent(new MessageDeleteEvent(data));
 					break;
+				}
+				case "MESSAGE_UPDATE": {
+					harmony.getEventManager().throwEvent(new MessageUpdateEvent(harmony, data));
 				}
 				default: {
 					logger.info("Unknown Event: {}", message);

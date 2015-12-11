@@ -23,9 +23,16 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.Socket;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.EntityBuilder;
+import org.apache.http.client.methods.HttpPatch;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.HttpClients;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -104,6 +111,7 @@ public class DiscordRequest {
 		try {
 			return new JSONObject(sendRequest(ext, "PATCH", harmony, data));
 		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -124,6 +132,8 @@ public class DiscordRequest {
 		}
 	}
 
+	private static HttpClient client = HttpClients.createDefault();
+	
 	/**
 	 * 
 	 * 
@@ -136,6 +146,32 @@ public class DiscordRequest {
 	 */
 	private static String sendRequest(String ext, String requestType, Harmony harmony, String data) throws IOException {
 
+		if(requestType.equals("PATCH")) {
+			
+			HttpPatch method = new HttpPatch(DISCORD_URL_API + ext);
+			
+			method.setHeader("User-Agent", USER_AGENT);
+			method.setHeader("Content-Type", "application/json");
+			method.setHeader("Authorization", harmony.getToken());
+			
+			method.setEntity(EntityBuilder.create().setText(data).build());
+			
+			HttpResponse response = client.execute(method);
+			
+			int code = response.getStatusLine().getStatusCode();
+			System.out.println(code);
+			BufferedReader in = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), StandardCharsets.UTF_8));
+			String inputLine;
+			StringBuilder response1 = new StringBuilder();
+
+			while ((inputLine = in.readLine()) != null) {
+				response1.append(inputLine);
+			}
+			
+			in.close();
+			return response1.toString();
+		}
+		
 		URL url = new URL(DISCORD_URL_API + ext);
 		// The built in URL version does not work here so use the direct one.
 		RestURLConnection rcon = (RestURLConnection) new RestURLStreamHandler().openConnection(url);

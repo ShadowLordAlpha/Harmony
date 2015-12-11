@@ -9,6 +9,7 @@ import sla.harmony.Harmony;
 import sla.harmony.event.EventHandler;
 import sla.harmony.event.HarmonyReadyEvent;
 import sla.harmony.event.MessageCreateEvent;
+import sla.harmony.rest.DiscordRequest;
 
 public class BasicBot {
 
@@ -38,7 +39,7 @@ public class BasicBot {
 				}
 				harmony.deleteMessage(event.getMessage());
 			}
-		} else {
+		} /*else {*/
 			if(event.getMessage().getContent().startsWith("|google")) {
 				String message = event.getMessage().getContent();
 				if(event.getMessage().getMentions() != null) {
@@ -46,8 +47,12 @@ public class BasicBot {
 				}
 				
 				harmony.sendMessage(event.getMessage().getChannelId(), "http://lmgtfy.com/?q=" + message.replace("|google ", "").replace(" ", "+").trim());
+			} else if(event.getMessage().getContent().startsWith("|updateinfo")) {
+				
+				harmony.deleteMessage(event.getMessage());
+				
 			}
-		}
+		/*}*/
 	}
 	
 	@EventHandler

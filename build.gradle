@@ -20,6 +20,7 @@ dependencies {
     compile "org.slf4j:slf4j-simple:+"
 	compile "org.json:json:+"
 	compile "org.java-websocket:Java-WebSocket:+"
+	compile "org.apache.httpcomponents:httpclient:+"
 }
 
 jar {
