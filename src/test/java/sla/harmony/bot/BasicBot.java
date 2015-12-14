@@ -1,15 +1,12 @@
 package sla.harmony.bot;
 
 import java.io.File;
-import java.net.NetPermission;
 
 import org.json.JSONArray;
 
 import sla.harmony.Harmony;
 import sla.harmony.event.EventHandler;
-import sla.harmony.event.HarmonyReadyEvent;
 import sla.harmony.event.MessageCreateEvent;
-import sla.harmony.rest.DiscordRequest;
 
 public class BasicBot {
 
@@ -19,12 +16,14 @@ public class BasicBot {
 		
 		harmony = new Harmony(new File("login.json"));
 		harmony.getEventManager().registerListener(new BasicBot());
+		// harmony.getEventManager().registerListener((HarmonyReadyEvent event) -> System.out.println("Harmoy Ready"));
 		harmony.login();
+		
 	}
 	
 	@EventHandler
 	public void onMessageCreate(MessageCreateEvent event) {
-		
+		System.out.println(event.getMessage().getTimestamp() + "] " + event.getMessage().getContent());
 		if(event.getMessage().getChannelId().equalsIgnoreCase("106972441074483200")) {
 			if(event.getMessage().getContent().startsWith("|deleteall")) {
 				System.out.println(event.getMessage().getAuthor());
@@ -51,14 +50,13 @@ public class BasicBot {
 				
 				harmony.deleteMessage(event.getMessage());
 				
+			} else if(event.getMessage().getContent().startsWith("|info")) {
+				String message = event.getMessage().getAuthor().getUsername() + "\n```Java\nName: ???\n" + 
+				"Servers: " + harmony.guildCache.estimatedSize() + "\n" +
+				"Users: " + harmony.userCache.estimatedSize() + "\n" +
+				"```";
+				harmony.sendMessage(event.getMessage().getChannelId(), message);
 			}
 		/*}*/
-	}
-	
-	@EventHandler
-	public void onHarmonyReady(HarmonyReadyEvent event) {
-		System.out.println("Harmony Ready!");
-		
-		System.out.println("BasicBot Ready!");
 	}
 }

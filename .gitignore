@@ -53,3 +53,4 @@ libs/*
 login.json
 .gradle/*
 .settings/*
+auth.json

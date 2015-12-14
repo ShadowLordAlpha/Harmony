@@ -1,47 +1,68 @@
 package sla.harmony.event;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import sla.harmony.event.adv.MessageReceivedEvent;
+
 public class EventManager {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(EventManager.class);
+	
+	private ConcurrentHashMap<Class<? extends Event>, ConcurrentHashMap<Method, Object>> methodMap = new ConcurrentHashMap<Class<? extends Event>, ConcurrentHashMap<Method, Object>>();
 
-	private HashMap<Method, Object> methodList = new HashMap<Method, Object>();
-
-	/**
-	 * Checks a given class for methods containing the {@link EventHandler @EventHandler} annotation. If a method is
-	 * found that contains this annotation and takes only one parameter that implements Event it is added to the list of
-	 * methods to check when a new event is thrown.
-	 * @param clazz the class to check
-	 */
-	public void registerListener(Object clazz) {
-		for (Method m : clazz.getClass().getMethods()) {
-			if (m.isAnnotationPresent(EventHandler.class) && m.getParameterTypes().length == 1 && Event.class.isAssignableFrom(m.getParameterTypes()[0])) {
-				logger.debug("Method added: " + m.getName());
-				methodList.put(m, clazz);
+	private ArrayList<EventListener<MessageReceivedEvent>> messageReveivedListeners = new ArrayList<EventListener<MessageReceivedEvent>>();
+	
+	public void addListener(Object o) {
+		for(Method m: o.getClass().getMethods()) {
+			if(m.isAnnotationPresent(EventHandler.class)) {
+				if(m.getParameterCount() == 1) {
+					if(Event.class.isAssignableFrom(m.getParameterTypes()[0])) {
+						logger.info("Added Method: {}", m);
+						methodMap.getOrDefault(m.getParameterTypes()[0], new ConcurrentHashMap<Method, Object>()).put(m, o);
+					}
+				}
 			}
 		}
 	}
 	
+	public void addListener(EventListener<MessageReceivedEvent> eventListener) {
+		messageReveivedListeners.add(eventListener);
+	}
+	
 	public void throwEvent(Event event) {
-		for(Method m: methodList.keySet()) {
-			try {
-				if(m.getParameterTypes()[0].equals(event.getClass())) {
-					try {
-						logger.debug("Sending Event: " + event.getClass().getName() + " to: " + m.getName());
-						m.setAccessible(true);
-						m.invoke(methodList.get(m), event);
-					} catch(Exception e) {
-						logger.warn("Failed to Properly invoke method:", e);
-					}
+		
+		// Bullshit magic to get lambdas to play nice
+		switch(event.getClass().getSimpleName()) {
+			case "MessageReceivedEvent": {
+				for(EventListener<MessageReceivedEvent> el: messageReveivedListeners) {
+					el.eventListner((MessageReceivedEvent) event);
 				}
-			} catch(Exception e) {
-				logger.warn("Failed to Properly throw Event:", e);
 			}
 		}
+			
+		
+		// logger.info("Throwing event {}", event.getClass().getName());
+		ConcurrentHashMap<Method, Object> methods = methodMap.get(event.getClass());
+		if(methods != null) {
+			for(Method m: methods.keySet()) {
+				try {
+					m.invoke(methods.get(m), event);
+				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					logger.warn("Event Manager Error:", e);
+				}
+			}
+		}
+	}
+	
+	@FunctionalInterface
+	public interface EventListener<E extends Event> {
+		
+		public void eventListner(E event);
 	}
 }

@@ -17,12 +17,43 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  */
+package sla.harmony.event.adv;
+
+import sla.harmony.event.Event;
+import sla.harmony.event.EventHandler;
 
 /**
- * Contains classes for communicating with Discords WebSocket. 
+ * The HarmonyReadyEvent is the event that is thrown when Harmony is fully ready for user interaction. This is thrown at
+ * different times depending on what mode Harmony is in.
  * <p>
- * Wsed for throwing events and processing information from Discord.
+ * <b>Basic Mode</b>
+ * <p>
+ * This event will not be thrown in Basic Mode
+ * <p>
+ * <b>Advanced Mode</b>
+ * <p>
+ * In advanced mode this event will be thrown whenever Harmony receives a message from Discord. Harmony will first
+ * Inflate a message if needed before passing it on to this event.
  * 
+ * @since Harmony v0.2.0
+ * @version 1.0.0
  * @author Josh "ShadowLordAlpha"
  */
-package sla.harmony.websocket;
+public class MessageReceivedEvent implements Event {
+
+	private String message;
+	/**
+	 * Creates a new Event that can be thrown by the EventManager
+	 */
+	public MessageReceivedEvent(String message) {
+		this.message = message;
+	}
+	
+	/**
+	 * Get the message received from Discord.
+	 * @return The message that was received from Discord.
+	 */
+	public String getMessage() {
+		return this.message;
+	}
+}
