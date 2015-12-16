@@ -20,7 +20,7 @@
 package sla.harmony.event.adv;
 
 import sla.harmony.event.Event;
-import sla.harmony.event.EventHandler;
+import sla.harmony.event.HarmonyReadyEvent;
 
 /**
  * The HarmonyReadyEvent is the event that is thrown when Harmony is fully ready for user interaction. This is thrown at
@@ -55,5 +55,11 @@ public class MessageReceivedEvent implements Event {
 	 */
 	public String getMessage() {
 		return this.message;
+	}
+	
+	@FunctionalInterface
+	public interface MessageReveivedListener {
+		
+		public void listen(MessageReceivedEvent event);
 	}
 }

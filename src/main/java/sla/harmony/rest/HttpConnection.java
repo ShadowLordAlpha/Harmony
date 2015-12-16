@@ -201,6 +201,48 @@ public class HttpConnection {
 	public static String sendPatchStr(String endpoint, String token, String data) throws AuthenticationException {
 		return sendRequest(endpoint, HttpProtocol.PATCH, token, data);
 	}
+	
+	/**
+	 * JSONObject Convince version of {@link sendPutStr}.
+	 * 
+	 * @param endpoint The endpoint where the Put request should be sent. May not be {@code null}.
+	 * @param token The sending users token or {@code null} if not token required.
+	 * @param data The data to send with the request or {@code null} if there is no data.
+	 * @return a JSONObject constructed from the request's response.
+	 * @throws AuthenticationException If and only if Discord returns a 401 status code in the reply message. This
+	 * should be used to attempt to login or relog as needed.
+	 */
+	public static JSONObject sendPutObj(String endpoint, String token, String data) throws AuthenticationException {
+		return new JSONObject(checkObjString(sendPutStr(endpoint, token, data)));
+	}
+
+	/**
+	 * JSONArray Convince version of {@link sendPutStr}.
+	 * 
+	 * @param endpoint The endpoint where the Put request should be sent. May not be {@code null}.
+	 * @param token The sending users token or {@code null} if not token required.
+	 * @param data The data to send with the request or {@code null} if there is no data.
+	 * @return a JSONArray constructed from the request's response.
+	 * @throws AuthenticationException If and only if Discord returns a 401 status code in the reply message. This
+	 * should be used to attempt to login or relog as needed.
+	 */
+	public static JSONArray sendPutArr(String endpoint, String token, String data) throws AuthenticationException {
+		return new JSONArray(checkArrString(sendPutStr(endpoint, token, data)));
+	}
+
+	/**
+	 * Send a Put Request to Discord.
+	 * 
+	 * @param endpoint The endpoint where the Put request should be sent. May not be {@code null}.
+	 * @param token The sending users token or {@code null} if not token required.
+	 * @param data The data to send with the request or {@code null} if there is no data.
+	 * @return the request's response message or {@code null} if there was no response message.
+	 * @throws AuthenticationException If and only if Discord returns a 401 status code in the reply message. This
+	 * should be used to attempt to login or relog as needed.
+	 */
+	public static String sendPutStr(String endpoint, String token, String data) throws AuthenticationException {
+		return sendRequest(endpoint, HttpProtocol.PUT, token, data);
+	}
 
 	/**
 	 * JSONObject Convince version of {@link sendDeleteStr}.

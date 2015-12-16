@@ -24,7 +24,7 @@ public class WebSocketConnection extends WebSocketAdapter {
 
 	private static final Logger logger = LoggerFactory.getLogger(WebSocketConnection.class);
 
-	private Harmony harmony;
+	protected Harmony harmony;
 	private WebSocket webSocket;
 	private Thread heartThread;
 

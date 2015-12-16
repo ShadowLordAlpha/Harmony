@@ -20,17 +20,25 @@
 package sla.harmony;
 
 import java.io.File;
+import java.time.format.DateTimeFormatter;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+
+import sla.harmony.channel.Channel;
 import sla.harmony.event.EventManager;
 import sla.harmony.exception.AuthenticationException;
+import sla.harmony.guild.Guild;
 import sla.harmony.rest.Endpoint;
 import sla.harmony.rest.HttpConnection;
+import sla.harmony.user.User;
 import sla.harmony.util.Utils;
+import sla.harmony.ws.BasicWebSocketConnection;
 import sla.harmony.ws.WebSocketConnection;
 
 /**
@@ -67,14 +75,20 @@ public class Harmony {
 	 */
 	public static final String GITHUB_URL = "https://github.com/ShadowLordAlpha/Harmony";
 
+	public static DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSSSSZZZ");
+	
 	private String email;
 	private String password;
 	private File dataFile;
 	private String token;
 	private WebSocketConnection conn;
 	private EventManager manager;
-
+	private boolean advanced;
 	private boolean connected;
+	
+	private Cache<String, User> userList;
+	private Cache<String, Channel> channelList;
+	private Cache<String, Guild> guildList;
 
 	public Harmony() {
 		this(null);
@@ -130,7 +144,7 @@ public class Harmony {
 		} catch (JSONException e) {
 			json = new JSONObject();
 		}
-
+		
 		// No password provided so look in data file for one.
 		if (password == null) {
 			password = json.optString("password", null);
@@ -180,7 +194,19 @@ public class Harmony {
 		}
 
 		connected = true;
-		conn = new WebSocketConnection(this, gatewayUrl);
+		advanced = HarmonyConfig.standBackImAProfessional;
+		advanced = true;
+		if(advanced) {
+			logger.info("Harmony Started in advanced mode. Methods may act differently!");
+			conn = new WebSocketConnection(this, gatewayUrl);
+		} else {
+			// These are only set up when in basic mode
+			logger.info("Harmony Started in basic mode. Building object Caches");
+			userList = Caffeine.newBuilder().build();
+			channelList = Caffeine.newBuilder().build();
+			guildList = Caffeine.newBuilder().build();
+			conn = new BasicWebSocketConnection(this, gatewayUrl);
+		}
 
 		logger.info("Login Successful");
 		saveData();
@@ -246,5 +272,43 @@ public class Harmony {
 
 	public EventManager getEventManager() {
 		return manager;
+	}
+
+	public String getToken() {
+		return this.token;
+	}
+	
+	public User getOrCreateUser(JSONObject jobj) {
+		if(userList == null) {
+			return new User().readObject(jobj);
+		}
+		
+		return userList.get(jobj.getString("id"), (String id) -> new User().readObject(jobj));
+	}
+	
+	public User getUser(String id) {
+		if(userList == null) {
+			return null;
+		}
+		
+		return userList.getIfPresent(id);
+	}
+	
+	// TODO channels stuff
+	
+	public Guild getOrCreateGuild(JSONObject jobj) {
+		if(userList == null) {
+			return new Guild().readObject(jobj);
+		}
+		
+		return guildList.get(jobj.getString("id"), (String id) -> new Guild().readObject(jobj));
+	}
+	
+	public Guild getGuild(String id) {
+		if(userList == null) {
+			return null;
+		}
+		
+		return guildList.getIfPresent(id);
 	}
 }

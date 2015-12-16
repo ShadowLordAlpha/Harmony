@@ -54,3 +54,4 @@ login.json
 .gradle/*
 .settings/*
 auth.json
+WebsocketLogs.log

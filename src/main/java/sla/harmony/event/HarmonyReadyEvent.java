@@ -46,4 +46,10 @@ public class HarmonyReadyEvent implements Event {
 	public HarmonyReadyEvent() {
 
 	}
+	
+	@FunctionalInterface
+	public interface HarmonyReadyListener {
+		
+		public void listen(HarmonyReadyEvent event);
+	}
 }
