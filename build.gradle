@@ -12,14 +12,17 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
-    compile "org.slf4j:slf4j-api:+"
-    compile "org.slf4j:slf4j-simple:+"
-	compile "org.json:json:+"
-	// compile "org.java-websocket:Java-WebSocket:+"
-	compile "org.apache.httpcomponents:httpclient:+"
-	compile "com.github.ben-manes.caffeine:caffeine:2.0.2"
-	compile "com.neovisionaries:nv-websocket-client:+"
-	testCompile "junit:junit:+"
+    compile "org.slf4j:slf4j-api:+" // Logger implementation used
+    
+	compile "org.json:json:+" // Current JSON reader
+	compile "com.fasterxml.jackson.core:jackson-databind:+"
+	compile "com.fasterxml.jackson.module:jackson-module-mrbean:+"
+	compile "org.apache.httpcomponents:httpclient:+" // Used to send Http requests to Discord
+	compile "com.github.ben-manes.caffeine:caffeine:2.0.2" // Caches that can have size limits or time limits
+	compile "com.neovisionaries:nv-websocket-client:+" // what we currently use for websocket connections
+	
+	testCompile "org.slf4j:slf4j-simple:+" // Logger implementation used in dev
+	testCompile "junit:junit:+" // Junit for unit testing
 }
 
 jar {

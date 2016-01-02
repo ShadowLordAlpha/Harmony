@@ -4,7 +4,7 @@ A Java wrapper around the Discord API.
 
 ## Warning
 
-This API/Library is unfinished as it is now. It is "mostly" stable but everything is subject to change and to not work nor is everything included.
+Basically all documentation is out of date.
 
 ## Getting Started
 

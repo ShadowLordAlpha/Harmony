@@ -1,22 +1,3 @@
-/**
- * The MIT License (MIT)
- * 
- * Copyright (c) 2015 ShadowLordAlpha
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
- * documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
- * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
- * Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
- * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- * 
- */
 package sla.harmony.util;
 
 import java.io.BufferedReader;
@@ -48,55 +29,13 @@ import javax.crypto.spec.SecretKeySpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Helper class that contains useful methods used throughout the rest of the code or internally.
- * 
- * @since Harmony v0.2.0
- * @version v1.0.0
- * @author Josh "ShadowLordAlpha"
- */
-public final class Utils {
+public class Utils {
 
 	/**
 	 * SLF4J logger instance for this class.
 	 */
 	private static final Logger logger = LoggerFactory.getLogger(Utils.class);
-
-	/**
-	 * Private constructor to keep users from making instances of this class.
-	 */
-	private Utils() {
-
-	}
-
-	/**
-	 * Helper method to check for the most basic of JSONObject errors and return a string.
-	 * 
-	 * @param data the String to check.
-	 * @return {@code "{}"} if the string was empty or {@code null} else the original string.
-	 */
-	public static String checkObjString(String data) {
-		if (data == null || data.isEmpty()) {
-			data = "{}";
-		}
-
-		return data;
-	}
-
-	/**
-	 * Helper method to check for the most basic of JSONArray errors and return a string.
-	 * 
-	 * @param data the String to check.
-	 * @return {@code "[]"} if the string was empty or {@code null} else the original string.
-	 */
-	public static String checkArrString(String data) {
-		if (data == null || data.isEmpty()) {
-			data = "[]";
-		}
-
-		return data;
-	}
-
+	
 	/**
 	 * Helper method to read in a whole file to a string and return it. If the file is {@code null} this method returns
 	 * null. If the file does not exist this method creates the file.
@@ -188,7 +127,7 @@ public final class Utils {
 	 * @return {@code null} or the contents of the file.
 	 */
 	public static void appendFile(File file, String data) {
-
+		
 		if (file == null) {
 			return;
 		}

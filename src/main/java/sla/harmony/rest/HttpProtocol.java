@@ -30,69 +30,69 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpTrace;
 
 /**
- * The HttpProtocol class represents the protocols that HttpConnection can use.
+ * The HttpProtocol class represents the protocols that HttpConnection can use. This was created to avoid needing a
+ * switch or if else if however it can be used by external classes if they want/need to create their own custom requests
+ * that are not covered.
  * 
- * @version 1.0.0
- * @since Harmony v0.2.0
  * @author Josh "ShadowLordAlpha"
  */
 public enum HttpProtocol {
-	
+
 	/**
 	 * Enum constant representing the Get protocol.
 	 */
 	GET("Get", "GET", HttpGet.class),
-	
+
 	/**
 	 * Enum constant representing the Post protocol.
 	 */
 	POST("Post", "POST", HttpPost.class),
-	
+
 	/**
 	 * Enum constant representing the Head protocol.
 	 */
 	HEAD("Head", "HEAD", HttpHead.class),
-	
+
 	/**
 	 * Enum constant representing the Options protocol.
 	 */
 	OPTIONS("Options", "OPTIONS", HttpOptions.class),
-	
+
 	/**
 	 * Enum constant representing the Put protocol.
 	 */
 	PUT("Put", "PUT", HttpPut.class),
-	
+
 	/**
 	 * Enum constant representing the Patch protocol.
 	 */
 	PATCH("Patch", "PATCH", HttpPatch.class),
-	
+
 	/**
 	 * Enum constant representing the Delete protocol.
 	 */
 	DELETE("Delete", "DELETE", HttpDelete.class),
-	
+
 	/**
 	 * Enum constant representing the Trace protocol.
 	 */
 	TRACE("Trace", "TRACE", HttpTrace.class);
-	
+
 	/**
 	 * A nicely formatted for this protocol. This should be used for output only
 	 */
 	private String readableName;
-	
+
 	/**
 	 * The actual name of this protocol.
 	 */
 	private String methodName;
-	
+
 	/**
 	 * The class used to send this protocol.
 	 */
 	private Class<? extends HttpRequestBase> clazz;
-	
+
 	/**
 	 * Private enum constructor for HttpProtocol
 	 * 
@@ -112,11 +112,11 @@ public enum HttpProtocol {
 	public String getMethodName() {
 		return methodName;
 	}
-	
+
 	public Class<? extends HttpRequestBase> getRequestClass() {
 		return clazz;
 	}
-	
+
 	@Override
 	public String toString() {
 		return getReadableName();

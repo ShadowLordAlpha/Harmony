@@ -32,23 +32,17 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static sla.harmony.util.Utils.*; // TODO remove this import and go though and place Utils where it needs to go
 
 import sla.harmony.Harmony;
 import sla.harmony.exception.AuthenticationException;
 
 /**
  * HttpConnection handles most of the messages that need to be sent to the Discord Server. If it needs an endpoint it is
- * going through this class. Convenience methods are provided for converting from Strings to JSONObject's or
- * JSONArray's. If the method to send a protocol doesn't exist the message can still be send using the
- * {@link sendRequest} method.
+ * going through this class. If the method to send a protocol doesn't exist the message can still be send using the
+ * {@link sendRequest} method with the proper arguments.
  * 
- * @since Harmony v0.1.4
- * @version 2.0.0
  * @author Josh "ShadowLordAlpha"
  */
 public class HttpConnection {
@@ -61,47 +55,25 @@ public class HttpConnection {
 	/**
 	 * Harmony user agent as requested by Discord Devs.
 	 */
-	private static final String USER_AGENT = String.format("Harmony DiscordBot(%s, v%d.%d.%d)", Harmony.GITHUB_URL,
-			Harmony.VERSION_MAJOR, Harmony.VERSION_MINOR, Harmony.VERSION_PATCH);
+	private static final String USER_AGENT = String.format("Harmony DiscordBot(%s, %s)", Harmony.GITHUB_URL,
+			Harmony.VERSION_STRING);
 
 	/**
 	 * The HttpClient that sends all requests to Discord.
 	 */
 	private static HttpClient client = HttpClients.createDefault();
 
-	/**
-	 * Private constructor to prevent instances of this class.
-	 */
-	private HttpConnection() {
-
-	}
+	private Harmony harmony;
 
 	/**
-	 * JSONObject Convince version of {@link sendGetStr}.
 	 * 
-	 * @param endpoint The endpoint where the Get request should be sent. May not be {@code null}.
-	 * @param token The sending users token or {@code null} if not token required.
-	 * @param data The data to send with the request or {@code null} if there is no data.
-	 * @return a JSONObject constructed from the request's response.
-	 * @throws AuthenticationException If and only if Discord returns a 401 status code in the reply message. This
-	 * should be used to attempt to login or relog as needed.
 	 */
-	public static JSONObject sendGetObj(String endpoint, String token, String data) throws AuthenticationException {
-		return new JSONObject(checkObjString(sendGetStr(endpoint, token, data)));
-	}
+	public HttpConnection(Harmony harmony) {
+		if (harmony == null) {
+			throw new NullPointerException("Harmony instance may not be null");
+		}
 
-	/**
-	 * JSONArray Convince version of {@link sendGetStr}.
-	 * 
-	 * @param endpoint The endpoint where the Get request should be sent. May not be {@code null}.
-	 * @param token The sending users tokenor {@code null} if not token required.
-	 * @param data The data to send with the request or {@code null} if there is no data.
-	 * @return a JSONArray constructed from the request's response.
-	 * @throws AuthenticationException If and only if Discord returns a 401 status code in the reply message. This
-	 * should be used to attempt to login or relog as needed.
-	 */
-	public static JSONArray sendGetArr(String endpoint, String token, String data) throws AuthenticationException {
-		return new JSONArray(checkArrString(sendGetStr(endpoint, token, data)));
+		this.harmony = harmony;
 	}
 
 	/**
@@ -114,36 +86,8 @@ public class HttpConnection {
 	 * @throws AuthenticationException If and only if Discord returns a 401 status code in the reply message. This
 	 * should be used to attempt to login or relog as needed.
 	 */
-	public static String sendGetStr(String endpoint, String token, String data) throws AuthenticationException {
-		return sendRequest(endpoint, HttpProtocol.GET, token, data);
-	}
-
-	/**
-	 * JSONObject Convince version of {@link sendPostStr}.
-	 * 
-	 * @param endpoint The endpoint where the Post request should be sent. May not be {@code null}.
-	 * @param token The sending users token or {@code null} if not token required.
-	 * @param data The data to send with the request or {@code null} if there is no data.
-	 * @return a JSONObject constructed from the request's response.
-	 * @throws AuthenticationException If and only if Discord returns a 401 status code in the reply message. This
-	 * should be used to attempt to login or relog as needed.
-	 */
-	public static JSONObject sendPostObj(String endpoint, String token, String data) throws AuthenticationException {
-		return new JSONObject(checkObjString(sendPostStr(endpoint, token, data)));
-	}
-
-	/**
-	 * JSONArray Convince version of {@link sendPostStr}.
-	 * 
-	 * @param endpoint The endpoint where the Post request should be sent. May not be {@code null}.
-	 * @param token The sending users token or {@code null} if not token required.
-	 * @param data The data to send with the request or {@code null} if there is no data.
-	 * @return a JSONArray constructed from the request's response.
-	 * @throws AuthenticationException If and only if Discord returns a 401 status code in the reply message. This
-	 * should be used to attempt to login or relog as needed.
-	 */
-	public static JSONArray sendPostArr(String endpoint, String token, String data) throws AuthenticationException {
-		return new JSONArray(checkArrString(sendPostStr(endpoint, token, data)));
+	public String sendGetStr(String endpoint, String data) throws AuthenticationException {
+		return sendRequest(endpoint, HttpProtocol.GET, data);
 	}
 
 	/**
@@ -156,36 +100,8 @@ public class HttpConnection {
 	 * @throws AuthenticationException If and only if Discord returns a 401 status code in the reply message. This
 	 * should be used to attempt to login or relog as needed.
 	 */
-	public static String sendPostStr(String endpoint, String token, String data) throws AuthenticationException {
-		return sendRequest(endpoint, HttpProtocol.POST, token, data);
-	}
-
-	/**
-	 * JSONObject Convince version of {@link sendPatchStr}.
-	 * 
-	 * @param endpoint The endpoint where the Patch request should be sent. May not be {@code null}.
-	 * @param token The sending users token or {@code null} if not token required.
-	 * @param data The data to send with the request or {@code null} if there is no data.
-	 * @return a JSONObject constructed from the request's response.
-	 * @throws AuthenticationException If and only if Discord returns a 401 status code in the reply message. This
-	 * should be used to attempt to login or relog as needed.
-	 */
-	public static JSONObject sendPatchObj(String endpoint, String token, String data) throws AuthenticationException {
-		return new JSONObject(checkObjString(sendPatchStr(endpoint, token, data)));
-	}
-
-	/**
-	 * JSONArray Convince version of {@link sendPatchStr}.
-	 * 
-	 * @param endpoint The endpoint where the Patch request should be sent. May not be {@code null}.
-	 * @param token The sending users token or {@code null} if not token required.
-	 * @param data The data to send with the request or {@code null} if there is no data.
-	 * @return a JSONArray constructed from the request's response.
-	 * @throws AuthenticationException If and only if Discord returns a 401 status code in the reply message. This
-	 * should be used to attempt to login or relog as needed.
-	 */
-	public static JSONArray sendPatchArr(String endpoint, String token, String data) throws AuthenticationException {
-		return new JSONArray(checkArrString(sendPatchStr(endpoint, token, data)));
+	public String sendPostStr(String endpoint, String data) throws AuthenticationException {
+		return sendRequest(endpoint, HttpProtocol.POST, data);
 	}
 
 	/**
@@ -198,36 +114,8 @@ public class HttpConnection {
 	 * @throws AuthenticationException If and only if Discord returns a 401 status code in the reply message. This
 	 * should be used to attempt to login or relog as needed.
 	 */
-	public static String sendPatchStr(String endpoint, String token, String data) throws AuthenticationException {
-		return sendRequest(endpoint, HttpProtocol.PATCH, token, data);
-	}
-	
-	/**
-	 * JSONObject Convince version of {@link sendPutStr}.
-	 * 
-	 * @param endpoint The endpoint where the Put request should be sent. May not be {@code null}.
-	 * @param token The sending users token or {@code null} if not token required.
-	 * @param data The data to send with the request or {@code null} if there is no data.
-	 * @return a JSONObject constructed from the request's response.
-	 * @throws AuthenticationException If and only if Discord returns a 401 status code in the reply message. This
-	 * should be used to attempt to login or relog as needed.
-	 */
-	public static JSONObject sendPutObj(String endpoint, String token, String data) throws AuthenticationException {
-		return new JSONObject(checkObjString(sendPutStr(endpoint, token, data)));
-	}
-
-	/**
-	 * JSONArray Convince version of {@link sendPutStr}.
-	 * 
-	 * @param endpoint The endpoint where the Put request should be sent. May not be {@code null}.
-	 * @param token The sending users token or {@code null} if not token required.
-	 * @param data The data to send with the request or {@code null} if there is no data.
-	 * @return a JSONArray constructed from the request's response.
-	 * @throws AuthenticationException If and only if Discord returns a 401 status code in the reply message. This
-	 * should be used to attempt to login or relog as needed.
-	 */
-	public static JSONArray sendPutArr(String endpoint, String token, String data) throws AuthenticationException {
-		return new JSONArray(checkArrString(sendPutStr(endpoint, token, data)));
+	public String sendPatchStr(String endpoint, String data) throws AuthenticationException {
+		return sendRequest(endpoint, HttpProtocol.PATCH, data);
 	}
 
 	/**
@@ -240,36 +128,8 @@ public class HttpConnection {
 	 * @throws AuthenticationException If and only if Discord returns a 401 status code in the reply message. This
 	 * should be used to attempt to login or relog as needed.
 	 */
-	public static String sendPutStr(String endpoint, String token, String data) throws AuthenticationException {
-		return sendRequest(endpoint, HttpProtocol.PUT, token, data);
-	}
-
-	/**
-	 * JSONObject Convince version of {@link sendDeleteStr}.
-	 * 
-	 * @param endpoint The endpoint where the Delete request should be sent. May not be {@code null}.
-	 * @param token The sending users token or {@code null} if not token required.
-	 * @param data The data to send with the request or {@code null} if there is no data.
-	 * @return a JSONObject constructed from the request's response.
-	 * @throws AuthenticationException If and only if Discord returns a 401 status code in the reply message. This
-	 * should be used to attempt to login or relog as needed.
-	 */
-	public static JSONObject sendDeleteObj(String endpoint, String token, String data) throws AuthenticationException {
-		return new JSONObject(checkObjString(sendDeleteStr(endpoint, token, data)));
-	}
-
-	/**
-	 * JSONArray Convince version of {@link sendDeleteStr}.
-	 * 
-	 * @param endpoint The endpoint where the Delete request should be sent. May not be {@code null}.
-	 * @param token The sending users token or {@code null} if not token required.
-	 * @param data The data to send with the request or {@code null} if there is no data.
-	 * @return a JSONArray constructed from the request's response.
-	 * @throws AuthenticationException If and only if Discord returns a 401 status code in the reply message. This
-	 * should be used to attempt to login or relog as needed.
-	 */
-	public static JSONArray sendDeleteArr(String endpoint, String token, String data) throws AuthenticationException {
-		return new JSONArray(checkArrString(sendDeleteStr(endpoint, token, data)));
+	public String sendPutStr(String endpoint, String data) throws AuthenticationException {
+		return sendRequest(endpoint, HttpProtocol.PUT, data);
 	}
 
 	/**
@@ -282,8 +142,8 @@ public class HttpConnection {
 	 * @throws AuthenticationException If and only if Discord returns a 401 status code in the reply message. This
 	 * should be used to attempt to login or relog as needed.
 	 */
-	public static String sendDeleteStr(String endpoint, String token, String data) throws AuthenticationException {
-		return sendRequest(endpoint, HttpProtocol.DELETE, token, data);
+	public String sendDeleteStr(String endpoint, String data) throws AuthenticationException {
+		return sendRequest(endpoint, HttpProtocol.DELETE, data);
 	}
 
 	/**
@@ -303,9 +163,8 @@ public class HttpConnection {
 	 * @throws AuthenticationException If and only if Discord returns a 401 status code in the reply message. This
 	 * should be used to attempt to login or relog as needed.
 	 */
-	public static String sendRequest(String endpoint, HttpProtocol protocol, String token, String data)
-			throws AuthenticationException {
-
+	public String sendRequest(String endpoint, HttpProtocol protocol, String data) throws AuthenticationException {
+		String token = harmony.getAuthToken();
 		if (endpoint == null) {
 			// Throw a null pointer for dev's
 			throw new NullPointerException("Endpoint can not be null!");
@@ -358,7 +217,8 @@ public class HttpConnection {
 			}
 		}
 
-		System.out.println(response.getEntity().getClass()); // TODO remove this later
+		// System.out.println(response.getEntity().getClass()); // there are a lot of different types so we can not just
+		// cast them to a string
 		if (response.getEntity() != null) {
 			StringBuffer buffer = new StringBuffer();
 			try (BufferedReader reader = new BufferedReader(
