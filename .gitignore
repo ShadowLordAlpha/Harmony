@@ -55,3 +55,4 @@ login.json
 .settings/*
 auth.json
 WebsocketLogs.log
+/.gradle/

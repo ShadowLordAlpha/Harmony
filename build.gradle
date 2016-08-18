@@ -14,12 +14,10 @@ targetCompatibility = 1.8
 dependencies {
     compile "org.slf4j:slf4j-api:+" // Logger implementation used
     
-	compile "org.json:json:+" // Current JSON reader
-	compile "com.fasterxml.jackson.core:jackson-databind:+"
-	compile "com.fasterxml.jackson.module:jackson-module-mrbean:+"
-	compile "org.apache.httpcomponents:httpclient:+" // Used to send Http requests to Discord
+	compile "com.fasterxml.jackson.core:jackson-databind:2.7.0" // Using Jackson-Databind because im lazy
 	compile "com.github.ben-manes.caffeine:caffeine:2.0.2" // Caches that can have size limits or time limits
-	compile "com.neovisionaries:nv-websocket-client:+" // what we currently use for websocket connections
+	compile "com.neovisionaries:nv-websocket-client:1.29"
+	compile 'com.squareup.okhttp3:okhttp:3.4.1'
 	
 	testCompile "org.slf4j:slf4j-simple:+" // Logger implementation used in dev
 	testCompile "junit:junit:+" // Junit for unit testing
@@ -27,7 +25,7 @@ dependencies {
 
 jar {
 	baseName = 'Harmony'
-	version = '0.2.0-alpha'
+	version = '0.3.0-alpha'
 }
 
 task wrapper(type: Wrapper) {
