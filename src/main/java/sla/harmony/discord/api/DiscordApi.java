@@ -16,10 +16,13 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import sla.harmony.base.Harmony;
+import sla.harmony.discord.api.gateway.Identify;
+import sla.harmony.discord.api.gateway.Identify.Properties;
 import sla.harmony.discord.api.gateway.payload.Payload;
 import sla.harmony.discord.api.gateway.payload.PayloadDispatch;
 import sla.harmony.discord.api.gateway.payload.PayloadHeartbeat;
 import sla.harmony.discord.api.gateway.payload.PayloadHello;
+import sla.harmony.discord.api.gateway.payload.PayloadIdentify;
 
 public class DiscordApi {
 
@@ -89,14 +92,23 @@ public class DiscordApi {
 		@Override
 		public void onConnected(WebSocket websocket, Map<String, List<String>> headers) throws Exception {
 			
-			StringBuilder builder = new StringBuilder();
-			builder.append("{\"op\":2,\"d\":{\"token\":\"");
-			builder.append(token.getToken());
-			builder.append("\",\"v\":5,\"properties\":{\"$os\":\"");
-			builder.append(System.getProperty("os.name"));
-			builder.append("\",\"$browser\":\"Harmony\",\"$device\": \"\",\"$referrer\":\"https://discordapp.com/@me\",\"$referring_domain\":\"discordapp.com\"}" + ",\"large_threshold\":100,\"compress\":false}}");
+			// TODO: these are default values so make them set in the constructor possibly
+			Identify.Properties properties = new Identify.Properties();
+			properties.setOs(System.getProperty("os.name"));
+			properties.setBrowser("Harmony");
+			properties.setDevice("");
+			properties.setReferrer("https://discordapp.com/@me");
+			properties.setReferringDomain("discordapp.com");
 			
-			websocket.sendText(builder.toString());
+			// TODO: set default values in constructor
+			Identify identify = new Identify();
+			identify.setToken(token.getToken()); // TODO: just pass the token object in and set with that
+			identify.setProperties(properties);
+			identify.setCompress(false);
+			identify.setLargeThreshold(100); // TODO: this should have limits of 50 - 250
+			identify.setShard(0, 1);
+			
+			websocket.sendText(Harmony.mapper.writer().writeValueAsString(new PayloadIdentify(identify)));
 		}
 
 		@Override
@@ -248,8 +260,9 @@ public class DiscordApi {
 
 		}
 
-		public void setBotToken(String botToken) {
+		public Builder setBotToken(String botToken) {
 			this.token = "Bot " + botToken;
+			return this;
 		}
 
 		public void setUserToken(String userToken) {
